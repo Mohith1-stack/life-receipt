@@ -1,9 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { html } from '../utils/html.js';
-import ReceiptCard from './ReceiptCard.js';
+import ReceiptCard from './ReceiptCard.jsx';
 
 /**
- * @typedef {import('../../app.js').ReceiptData} ReceiptData
+ * @typedef {import('../App.jsx').ReceiptData} ReceiptData
  */
 
 /**
@@ -61,46 +60,46 @@ const ExploreMode = React.memo(function ExploreMode({ dataset, onReceiptClick })
     });
   }, [searchQuery, activeTags, dataset]);
 
-  return html`
+  return (
     <section className="view-section active" aria-label="Explore View Grid">
       <div className="explore-controls">
         <div className="search-bar">
           <input 
             type="search" 
             placeholder="Search moments... (e.g., Tokyo, late-night)" 
-            value=${searchQuery}
-            onInput=${(/** @type {React.ChangeEvent<HTMLInputElement>} */ e) => setSearchQuery(e.target.value)}
+            value={searchQuery}
+            onInput={(/** @type {React.ChangeEvent<HTMLInputElement>} */ e) => setSearchQuery(e.target.value)}
             aria-label="Search moments"
             aria-controls="explore-grid-results"
           />
         </div>
         <div className="filters" role="group" aria-label="Filter by tags">
-          ${allTags.map(tag => html`
+          {allTags.map(tag => (
             <button 
-              key=${tag}
-              className=${`tag filter-btn ${activeTags.has(tag) ? 'active' : ''}`}
-              onClick=${() => toggleTag(tag)}
-              aria-pressed=${activeTags.has(tag)}
+              key={tag}
+              className={`tag filter-btn ${activeTags.has(tag) ? 'active' : ''}`}
+              onClick={() => toggleTag(tag)}
+              aria-pressed={activeTags.has(tag)}
             >
-              #${tag}
+              #{tag}
             </button>
-          `)}
+          ))}
         </div>
       </div>
       
       <div className="stats-bar" aria-live="polite" aria-atomic="true">
-        <span>${filteredData.length} moment${filteredData.length !== 1 ? 's' : ''} found</span>
+        <span>{filteredData.length} moment{filteredData.length !== 1 ? 's' : ''} found</span>
       </div>
 
       <div id="explore-grid-results" className="explore-grid" role="list">
-        ${filteredData.map(receipt => html`
-          <div role="listitem" key=${receipt.id}>
-            <${ReceiptCard} receipt=${receipt} onClick=${onReceiptClick} />
+        {filteredData.map(receipt => (
+          <div role="listitem" key={receipt.id}>
+            <ReceiptCard receipt={receipt} onClick={onReceiptClick} />
           </div>
-        `)}
+        ))}
       </div>
     </section>
-  `;
+  );
 });
 
 export default ExploreMode;

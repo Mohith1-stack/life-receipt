@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { html } from '../utils/html.js';
 
 /**
- * @typedef {import('../../app.js').ReceiptData} ReceiptData
+ * @typedef {import('../App.jsx').ReceiptData} ReceiptData
  */
 
 /**
@@ -69,68 +68,70 @@ export default function ReceiptModal({ receipt, onClose }) {
   const dateStr = new Date(receipt.timestamp).toLocaleString();
   const tags = receipt.tags || [];
 
-  return html`
+  return (
     <div 
-      className=${`modal-overlay ${receipt ? 'active' : ''}`} 
-      onClick=${onClose}
+      className={`modal-overlay ${receipt ? 'active' : ''}`} 
+      onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
       aria-describedby="modal-desc"
     >
       <div 
-        ref=${modalRef}
+        ref={modalRef}
         className="modal-content glass-panel" 
-        onClick=${(/** @type {React.MouseEvent} */ e) => e.stopPropagation()}
+        onClick={(/** @type {React.MouseEvent} */ e) => e.stopPropagation()}
       >
         <button 
-          ref=${closeBtnRef}
+          ref={closeBtnRef}
           className="icon-button close-btn" 
-          onClick=${onClose}
+          onClick={onClose}
           aria-label="Close modal"
         >✕</button>
         <div className="receipt-detail" id="modal-desc">
           <div className="receipt-header">
             <h2 id="modal-title" className="receipt-brand">DIGITAL RECEIPT</h2>
-            <div className="receipt-meta">TXN ID: ${String(receipt.id).padStart(8, '0')}</div>
-            <div className="receipt-meta">${dateStr}</div>
+            <div className="receipt-meta">TXN ID: {String(receipt.id).padStart(8, '0')}</div>
+            <div className="receipt-meta">{dateStr}</div>
           </div>
           
-          <div className="receipt-line" style=${{marginBottom: '2rem'}}>
+          <div className="receipt-line" style={{marginBottom: '2rem'}}>
             <span>TYPE</span>
-            <span>${(receipt.type || 'generic').toUpperCase()}</span>
+            <span>{(receipt.type || 'generic').toUpperCase()}</span>
           </div>
           
-          ${receipt.content ? Object.entries(receipt.content).map(([key, value]) => html`
-            <div key=${key} className="receipt-line">
-              <span>${key.toUpperCase()}</span>
-              <span>${value}</span>
+          {receipt.content ? Object.entries(receipt.content).map(([key, value]) => (
+            <div key={key} className="receipt-line">
+              <span>{key.toUpperCase()}</span>
+              <span>{value}</span>
             </div>
-          `) : html`
-            ${receipt.title && html`
-               <div key="t" className="receipt-line">
-                 <span>TITLE</span>
-                 <span>${receipt.title}</span>
-               </div>
-            `}
-            ${receipt.description && html`
-               <div key="d" className="receipt-line">
-                 <span>DESC</span>
-                 <span>${receipt.description}</span>
-               </div>
-            `}
-          `}
+          )) : (
+            <React.Fragment>
+              {receipt.title && (
+                 <div key="t" className="receipt-line">
+                   <span>TITLE</span>
+                   <span>{receipt.title}</span>
+                 </div>
+              )}
+              {receipt.description && (
+                 <div key="d" className="receipt-line">
+                   <span>DESC</span>
+                   <span>{receipt.description}</span>
+                 </div>
+              )}
+            </React.Fragment>
+          )}
           
           <div className="receipt-total">
             <span>STATUS</span>
             <span>RECORDED</span>
           </div>
           
-          <div style=${{marginTop: '2rem', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)'}}>
-            ${tags.map(t => `#${t}`).join(' ')}
+          <div style={{marginTop: '2rem', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)'}}>
+            {tags.map(t => `#${t}`).join(' ')}
           </div>
         </div>
       </div>
     </div>
-  `;
+  );
 }

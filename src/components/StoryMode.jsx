@@ -1,9 +1,8 @@
 import React, { useMemo, useEffect, useRef } from 'react';
-import { html } from '../utils/html.js';
-import ReceiptCard from './ReceiptCard.js';
+import ReceiptCard from './ReceiptCard.jsx';
 
 /**
- * @typedef {import('../../app.js').ReceiptData} ReceiptData
+ * @typedef {import('../App.jsx').ReceiptData} ReceiptData
  */
 
 /**
@@ -103,7 +102,7 @@ const StoryMode = React.memo(function StoryMode({ dataset, onReceiptClick }) {
     return () => observer.disconnect();
   }, [chapters]);
 
-  return html`
+  return (
     <section className="view-section active" aria-label="Story View Timeline">
       <div className="story-intro">
         <h2>Invisible Threads</h2>
@@ -111,21 +110,21 @@ const StoryMode = React.memo(function StoryMode({ dataset, onReceiptClick }) {
         <div className="scroll-indicator" aria-hidden="true">↓</div>
       </div>
       <div className="story-timeline" role="feed" aria-busy="false">
-        ${chapters.map((chapter, cIdx) => html`
-          <div key=${cIdx} className="story-chapter">
-            <h3 className="chapter-title" tabIndex="0">${chapter.title}</h3>
-            ${chapter.receipts.map((receipt) => html`
-              <article key=${receipt.id} className="story-node fade-in-element" aria-posinset=${cIdx + 1} aria-setsize=${chapters.length}>
+        {chapters.map((chapter, cIdx) => (
+          <div key={cIdx} className="story-chapter">
+            <h3 className="chapter-title" tabIndex="0">{chapter.title}</h3>
+            {chapter.receipts.map((receipt) => (
+              <article key={receipt.id} className="story-node fade-in-element" aria-posinset={cIdx + 1} aria-setsize={chapters.length}>
                 <div className="node-point" aria-hidden="true"></div>
-                <${ReceiptCard} receipt=${receipt} onClick=${onReceiptClick} />
-                <div style=${{width: '45%'}} aria-hidden="true"></div>
+                <ReceiptCard receipt={receipt} onClick={onReceiptClick} />
+                <div style={{width: '45%'}} aria-hidden="true"></div>
               </article>
-            `)}
+            ))}
           </div>
-        `)}
+        ))}
       </div>
     </section>
-  `;
+  );
 });
 
 export default StoryMode;

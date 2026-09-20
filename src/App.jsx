@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { createRoot } from 'react-dom/client';
-import { html } from './src/utils/html.js';
-import DatasetUploader from './src/components/DatasetUploader.js';
-import StoryMode from './src/components/StoryMode.js';
-import ExploreMode from './src/components/ExploreMode.js';
-import ReceiptModal from './src/components/ReceiptModal.js';
+import DatasetUploader from './components/DatasetUploader.jsx';
+import StoryMode from './components/StoryMode.jsx';
+import ExploreMode from './components/ExploreMode.jsx';
+import ReceiptModal from './components/ReceiptModal.jsx';
 
 /**
  * @typedef {Object} ReceiptData
@@ -55,14 +53,14 @@ function App() {
   }, [dataset]);
 
   if (!dataset) {
-    return html`
-      <main className="app-container" style=${{justifyContent: 'center', alignItems: 'center'}} aria-label="Upload Dataset View">
-        <${DatasetUploader} onDataLoaded=${setDataset} />
+    return (
+      <main className="app-container" style={{justifyContent: 'center', alignItems: 'center'}} aria-label="Upload Dataset View">
+        <DatasetUploader onDataLoaded={setDataset} />
       </main>
-    `;
+    );
   }
 
-  return html`
+  return (
     <div className="app-container">
       <header className="app-header" role="banner">
         <div className="logo">
@@ -71,23 +69,23 @@ function App() {
         </div>
         <nav className="view-toggle" aria-label="Main Navigation">
           <button 
-            className=${currentView === 'story' ? 'active' : ''} 
-            onClick=${() => setCurrentView('story')}
-            aria-pressed=${currentView === 'story'}
+            className={currentView === 'story' ? 'active' : ''} 
+            onClick={() => setCurrentView('story')}
+            aria-pressed={currentView === 'story'}
             aria-label="Switch to Story View"
           >
             The Story
           </button>
           <button 
-            className=${currentView === 'explore' ? 'active' : ''} 
-            onClick=${() => setCurrentView('explore')}
-            aria-pressed=${currentView === 'explore'}
+            className={currentView === 'explore' ? 'active' : ''} 
+            onClick={() => setCurrentView('explore')}
+            aria-pressed={currentView === 'explore'}
             aria-label="Switch to Explore View"
           >
             Explore Data
           </button>
           <button 
-            onClick=${() => setDataset(null)}
+            onClick={() => setDataset(null)}
             aria-label="Upload new dataset"
             title="Upload new dataset"
           >
@@ -97,22 +95,17 @@ function App() {
       </header>
 
       <main className="main-content" role="main" aria-live="polite">
-        ${currentView === 'story' 
-          ? html`<${StoryMode} dataset=${dataset} onReceiptClick=${handleReceiptClick} />`
-          : html`<${ExploreMode} dataset=${dataset} onReceiptClick=${handleReceiptClick} />`
+        {currentView === 'story' 
+          ? <StoryMode dataset={dataset} onReceiptClick={handleReceiptClick} />
+          : <ExploreMode dataset={dataset} onReceiptClick={handleReceiptClick} />
         }
       </main>
       
-      ${selectedReceipt && html`
-        <${ReceiptModal} receipt=${selectedReceipt} onClose=${() => setSelectedReceipt(null)} />
-      `}
+      {selectedReceipt && (
+        <ReceiptModal receipt={selectedReceipt} onClose={() => setSelectedReceipt(null)} />
+      )}
     </div>
-  `;
+  );
 }
 
-// Ensure "use strict" conceptually, initialize app
-const rootElement = document.getElementById('root');
-if (rootElement) {
-  const root = createRoot(rootElement);
-  root.render(html`<${App} />`);
-}
+export default App;

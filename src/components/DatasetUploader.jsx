@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { html } from '../utils/html.js';
 import { parseCSV } from '../utils/parser.js';
 
 /**
- * @typedef {import('../../app.js').ReceiptData} ReceiptData
+ * @typedef {import('../App.jsx').ReceiptData} ReceiptData
  */
 
 /**
@@ -122,21 +121,21 @@ const DatasetUploader = React.memo(function DatasetUploader({ onDataLoaded }) {
     }
   }, []);
 
-  return html`
+  return (
     <section 
       className="upload-container" 
       aria-label="Upload Dataset Section"
-      onDragEnter=${handleDrag} 
-      onDragLeave=${handleDrag} 
-      onDragOver=${handleDrag} 
-      onDrop=${handleDrop}
+      onDragEnter={handleDrag} 
+      onDragLeave={handleDrag} 
+      onDragOver={handleDrag} 
+      onDrop={handleDrop}
     >
       <div 
-        className=${`upload-zone glass-panel ${dragActive ? 'active' : ''}`}
+        className={`upload-zone glass-panel ${dragActive ? 'active' : ''}`}
         tabIndex="0"
         role="button"
         aria-label="Drag and drop files here, or press enter to select files"
-        onKeyDown=${handleKeyDown}
+        onKeyDown={handleKeyDown}
       >
         <h2>Drop ANY file here</h2>
         <p>Supports .json, .csv, .pdf, images, docs! We'll transform every file into a moment on your timeline.</p>
@@ -147,21 +146,21 @@ const DatasetUploader = React.memo(function DatasetUploader({ onDataLoaded }) {
             id="file-upload-input"
             type="file" 
             multiple 
-            onChange=${handleChange} 
+            onChange={handleChange} 
             className="visually-hidden"
-            style=${{position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0}}
+            style={{position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0}}
             tabIndex="-1"
           />
         </label>
         
-        ${error && html`<div className="upload-error" role="alert" aria-live="assertive">${error}</div>`}
+        {error && <div className="upload-error" role="alert" aria-live="assertive">{error}</div>}
         
         <div className="demo-hint">
           Don't have files? We provide a <strong>test-dataset.json</strong> for testing in the workspace.
         </div>
       </div>
     </section>
-  `;
+  );
 });
 
 export default DatasetUploader;

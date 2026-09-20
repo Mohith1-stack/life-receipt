@@ -7,12 +7,29 @@ import ExploreMode from './src/components/ExploreMode.js';
 import ReceiptModal from './src/components/ReceiptModal.js';
 
 /**
+ * @typedef {Object} ReceiptData
+ * @property {string} id - Unique identifier for the receipt.
+ * @property {string} type - The category of the receipt (e.g., 'music', 'purchase').
+ * @property {string} title - The main title or descriptor.
+ * @property {string} timestamp - ISO 8601 date string.
+ * @property {string} [description] - Optional detailed description.
+ * @property {string[]} [tags] - Array of associated tags.
+ * @property {number} [amount] - Optional numeric amount for purchases.
+ */
+
+/**
  * Main Application Root Component.
  * Manages global state including dataset, current view, and selected receipt for the modal.
+ * @returns {React.ReactElement} The rendered application.
  */
 function App() {
+  /** @type {[ReceiptData[] | null, React.Dispatch<React.SetStateAction<ReceiptData[] | null>>]} */
   const [dataset, setDataset] = useState(null);
+  
+  /** @type {['story' | 'explore', React.Dispatch<React.SetStateAction<'story' | 'explore'>>]} */
   const [currentView, setCurrentView] = useState('story');
+  
+  /** @type {[ReceiptData | null, React.Dispatch<React.SetStateAction<ReceiptData | null>>]} */
   const [selectedReceipt, setSelectedReceipt] = useState(null);
 
   // Inject the animation style that IntersectionObserver uses globally
@@ -26,16 +43,20 @@ function App() {
     document.head.appendChild(style);
   }, []);
 
+  /**
+   * Handles opening a receipt in the modal view.
+   * @param {string} id - The ID of the receipt to display.
+   */
   const handleReceiptClick = useCallback((id) => {
     if (dataset) {
       const found = dataset.find(r => r.id === id);
-      setSelectedReceipt(found);
+      if (found) setSelectedReceipt(found);
     }
   }, [dataset]);
 
   if (!dataset) {
     return html`
-      <main className="app-container" style=${{justifyContent: 'center', alignItems: 'center'}}>
+      <main className="app-container" style=${{justifyContent: 'center', alignItems: 'center'}} aria-label="Upload Dataset View">
         <${DatasetUploader} onDataLoaded=${setDataset} />
       </main>
     `;
@@ -53,6 +74,7 @@ function App() {
             className=${currentView === 'story' ? 'active' : ''} 
             onClick=${() => setCurrentView('story')}
             aria-pressed=${currentView === 'story'}
+            aria-label="Switch to Story View"
           >
             The Story
           </button>
@@ -60,6 +82,7 @@ function App() {
             className=${currentView === 'explore' ? 'active' : ''} 
             onClick=${() => setCurrentView('explore')}
             aria-pressed=${currentView === 'explore'}
+            aria-label="Switch to Explore View"
           >
             Explore Data
           </button>
@@ -73,7 +96,7 @@ function App() {
         </nav>
       </header>
 
-      <main className="main-content" role="main">
+      <main className="main-content" role="main" aria-live="polite">
         ${currentView === 'story' 
           ? html`<${StoryMode} dataset=${dataset} onReceiptClick=${handleReceiptClick} />`
           : html`<${ExploreMode} dataset=${dataset} onReceiptClick=${handleReceiptClick} />`
@@ -89,5 +112,7 @@ function App() {
 
 // Ensure "use strict" conceptually, initialize app
 const rootElement = document.getElementById('root');
-const root = createRoot(rootElement);
-root.render(html`<${App} />`);
+if (rootElement) {
+  const root = createRoot(rootElement);
+  root.render(html`<${App} />`);
+}

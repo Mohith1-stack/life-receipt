@@ -1,13 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Your Life, In Receipts - A dynamic, algorithmic digital scrapbook.">
+    <meta name="keywords" content="receipts, digital, scrapbook, storytelling, timeline, data visualization">
+    <meta name="author" content="Frontend Challenge">
     <meta name="theme-color" content="#050505">
-    <title>Your Life, In Receipts (React)</title>
     
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Your Life, In Receipts">
+    <meta property="og:description" content="A dynamic, algorithmic digital scrapbook.">
+    
+    <title>Your Life, In Receipts</title>
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="./styles.css" as="style">
     <link rel="stylesheet" href="./styles.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -32,6 +43,7 @@
     </div>
 
     <!-- React Root -->
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
 
     <script type="module" src="./app.js" defer></script>

@@ -1,20 +1,32 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { html } from '../utils/html.js';
 import ReceiptCard from './ReceiptCard.js';
 
 /**
+ * @typedef {import('../../app.js').ReceiptData} ReceiptData
+ */
+
+/**
+ * @typedef {Object} ExploreModeProps
+ * @property {ReceiptData[]} dataset - The array of receipts.
+ * @property {(id: string) => void} onReceiptClick - Callback for clicking a receipt.
+ */
+
+/**
  * ExploreMode component for filtering and searching through the dataset.
  * 
- * @param {Object} props
- * @param {Array} props.dataset - The array of receipts.
- * @param {Function} props.onReceiptClick - Callback for clicking a receipt.
+ * @param {ExploreModeProps} props
+ * @returns {React.ReactElement}
  */
-export default function ExploreMode({ dataset, onReceiptClick }) {
+const ExploreMode = React.memo(function ExploreMode({ dataset, onReceiptClick }) {
   const [searchQuery, setSearchQuery] = useState('');
+  /** @type {[Set<string>, React.Dispatch<React.SetStateAction<Set<string>>>]} */
   const [activeTags, setActiveTags] = useState(new Set());
 
   // Extract unique tags dynamically
+  /** @type {string[]} */
   const allTags = useMemo(() => {
+    /** @type {Set<string>} */
     const tags = new Set();
     if (dataset) {
       dataset.forEach(r => (r.tags || []).forEach(t => tags.add(t)));
@@ -22,16 +34,22 @@ export default function ExploreMode({ dataset, onReceiptClick }) {
     return Array.from(tags).sort();
   }, [dataset]);
 
-  const toggleTag = (tag) => {
-    const newTags = new Set(activeTags);
-    if (newTags.has(tag)) {
-      newTags.delete(tag);
-    } else {
-      newTags.add(tag);
-    }
-    setActiveTags(newTags);
-  };
+  /**
+   * @param {string} tag 
+   */
+  const toggleTag = useCallback((tag) => {
+    setActiveTags(prevTags => {
+      const newTags = new Set(prevTags);
+      if (newTags.has(tag)) {
+        newTags.delete(tag);
+      } else {
+        newTags.add(tag);
+      }
+      return newTags;
+    });
+  }, []);
 
+  /** @type {ReceiptData[]} */
   const filteredData = useMemo(() => {
     if (!dataset) return [];
     const query = searchQuery.toLowerCase();
@@ -44,15 +62,16 @@ export default function ExploreMode({ dataset, onReceiptClick }) {
   }, [searchQuery, activeTags, dataset]);
 
   return html`
-    <section className="view-section active" aria-label="Explore View">
+    <section className="view-section active" aria-label="Explore View Grid">
       <div className="explore-controls">
         <div className="search-bar">
           <input 
-            type="text" 
+            type="search" 
             placeholder="Search moments... (e.g., Tokyo, late-night)" 
             value=${searchQuery}
-            onInput=${e => setSearchQuery(e.target.value)}
+            onInput=${(/** @type {React.ChangeEvent<HTMLInputElement>} */ e) => setSearchQuery(e.target.value)}
             aria-label="Search moments"
+            aria-controls="explore-grid-results"
           />
         </div>
         <div className="filters" role="group" aria-label="Filter by tags">
@@ -69,11 +88,11 @@ export default function ExploreMode({ dataset, onReceiptClick }) {
         </div>
       </div>
       
-      <div className="stats-bar" aria-live="polite">
+      <div className="stats-bar" aria-live="polite" aria-atomic="true">
         <span>${filteredData.length} moment${filteredData.length !== 1 ? 's' : ''} found</span>
       </div>
 
-      <div className="explore-grid" role="list">
+      <div id="explore-grid-results" className="explore-grid" role="list">
         ${filteredData.map(receipt => html`
           <div role="listitem" key=${receipt.id}>
             <${ReceiptCard} receipt=${receipt} onClick=${onReceiptClick} />
@@ -82,4 +101,6 @@ export default function ExploreMode({ dataset, onReceiptClick }) {
       </div>
     </section>
   `;
-}
+});
+
+export default ExploreMode;

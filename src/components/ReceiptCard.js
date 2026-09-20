@@ -2,14 +2,24 @@ import React, { memo } from 'react';
 import { html } from '../utils/html.js';
 
 /**
+ * @typedef {import('../../app.js').ReceiptData} ReceiptData
+ */
+
+/**
+ * @typedef {Object} ReceiptCardProps
+ * @property {ReceiptData} receipt - The digital moment object.
+ * @property {(id: string) => void} onClick - Callback when the card is clicked.
+ */
+
+/**
  * ReceiptCard component to render a single digital moment.
  * Wrapped in React.memo for performance optimization.
  * 
- * @param {Object} props
- * @param {Object} props.receipt - The digital moment object.
- * @param {Function} props.onClick - Callback when the card is clicked.
+ * @param {ReceiptCardProps} props
+ * @returns {React.ReactElement}
  */
-const ReceiptCard = memo(({ receipt, onClick }) => {
+const ReceiptCard = memo(function ReceiptCard({ receipt, onClick }) {
+  /** @type {React.ReactElement[]} */
   let innerContent = [];
   
   // Bulletproof rendering for any type
@@ -37,6 +47,11 @@ const ReceiptCard = memo(({ receipt, onClick }) => {
         innerContent.push(html`<div key=${k} className="card-desc"><strong>${k}:</strong> ${v}</div>`);
       });
     }
+  } else if (receipt.title) {
+     innerContent.push(html`<div key="t" className="card-title">${receipt.title}</div>`);
+     if (receipt.description) {
+       innerContent.push(html`<div key="d" className="card-desc">${receipt.description}</div>`);
+     }
   } else {
     innerContent.push(html`<div key="t" className="card-title">Empty Record</div>`);
   }
@@ -50,8 +65,13 @@ const ReceiptCard = memo(({ receipt, onClick }) => {
       onClick=${() => onClick(receipt.id)}
       role="button"
       tabIndex="0"
-      aria-label=${`View details for ${receipt.type} moment on ${dateStr}`}
-      onKeyDown=${(e) => { if (e.key === 'Enter' || e.key === ' ') onClick(receipt.id); }}
+      aria-label=${`View details for ${receipt.type || 'generic'} moment on ${dateStr}`}
+      onKeyDown=${(/** @type {React.KeyboardEvent} */ e) => { 
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick(receipt.id); 
+        }
+      }}
     >
       <div className="card-header">
         <span className=${`type-badge type-${receipt.type || 'generic'}`}>${receipt.type || 'generic'}</span>

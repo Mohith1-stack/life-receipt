@@ -2,24 +2,62 @@ import React, { useEffect, useRef } from 'react';
 import { html } from '../utils/html.js';
 
 /**
+ * @typedef {import('../../app.js').ReceiptData} ReceiptData
+ */
+
+/**
+ * @typedef {Object} ReceiptModalProps
+ * @property {ReceiptData | null} receipt - The digital moment object to display.
+ * @property {() => void} onClose - Callback to close the modal.
+ */
+
+/**
  * ReceiptModal component to display detailed information of a receipt.
  * Handles focus management for accessibility.
  * 
- * @param {Object} props
- * @param {Object} props.receipt - The digital moment object to display.
- * @param {Function} props.onClose - Callback to close the modal.
+ * @param {ReceiptModalProps} props
+ * @returns {React.ReactElement | null}
  */
 export default function ReceiptModal({ receipt, onClose }) {
+  /** @type {React.MutableRefObject<HTMLButtonElement | null>} */
   const closeBtnRef = useRef(null);
+  /** @type {React.MutableRefObject<HTMLDivElement | null>} */
+  const modalRef = useRef(null);
 
   useEffect(() => {
+    if (!receipt) return;
+    
+    /** @param {KeyboardEvent} e */
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      
+      // Focus Trap implementation
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        const firstElement = /** @type {HTMLElement} */ (focusableElements[0]);
+        const lastElement = /** @type {HTMLElement} */ (focusableElements[focusableElements.length - 1]);
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+          }
+        }
+      }
     };
+    
     window.addEventListener('keydown', handleKeyDown);
     
     // Manage focus for accessibility
-    if (receipt && closeBtnRef.current) {
+    if (closeBtnRef.current) {
       closeBtnRef.current.focus();
     }
     
@@ -38,10 +76,12 @@ export default function ReceiptModal({ receipt, onClose }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
+      aria-describedby="modal-desc"
     >
       <div 
+        ref=${modalRef}
         className="modal-content glass-panel" 
-        onClick=${e => e.stopPropagation()}
+        onClick=${(/** @type {React.MouseEvent} */ e) => e.stopPropagation()}
       >
         <button 
           ref=${closeBtnRef}
@@ -49,7 +89,7 @@ export default function ReceiptModal({ receipt, onClose }) {
           onClick=${onClose}
           aria-label="Close modal"
         >✕</button>
-        <div className="receipt-detail">
+        <div className="receipt-detail" id="modal-desc">
           <div className="receipt-header">
             <h2 id="modal-title" className="receipt-brand">DIGITAL RECEIPT</h2>
             <div className="receipt-meta">TXN ID: ${String(receipt.id).padStart(8, '0')}</div>
@@ -66,7 +106,20 @@ export default function ReceiptModal({ receipt, onClose }) {
               <span>${key.toUpperCase()}</span>
               <span>${value}</span>
             </div>
-          `) : null}
+          `) : html`
+            ${receipt.title && html`
+               <div key="t" className="receipt-line">
+                 <span>TITLE</span>
+                 <span>${receipt.title}</span>
+               </div>
+            `}
+            ${receipt.description && html`
+               <div key="d" className="receipt-line">
+                 <span>DESC</span>
+                 <span>${receipt.description}</span>
+               </div>
+            `}
+          `}
           
           <div className="receipt-total">
             <span>STATUS</span>

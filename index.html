@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Life Receipt</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="hero">
+        <p class="eyebrow">Digital moments → personal story</p>
+        <h1>Your Life Receipt</h1>
+        <p>
+          A frontend-only interactive story built from disconnected events: songs,
+          locations, purchases, and messages.
+        </p>
+      </header>
+
+      <section class="controls" aria-label="Story controls">
+        <div id="typeFilters" class="chip-group"></div>
+        <label>
+          Search moments
+          <input id="searchInput" type="search" placeholder="song, city, coffee, text..." />
+        </label>
+      </section>
+
+      <section>
+        <h2>Story Chapters</h2>
+        <div id="chapters" class="chapters"></div>
+      </section>
+
+      <section>
+        <h2>Moment Timeline</h2>
+        <ul id="timeline" class="timeline"></ul>
+      </section>
+
+      <section>
+        <h2>Moment Inspector</h2>
+        <article id="inspector" class="inspector" aria-live="polite">
+          Select a moment in the timeline to see how it fits your day.
+        </article>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

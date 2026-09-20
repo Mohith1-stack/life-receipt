@@ -1,0 +1,54 @@
+[
+  {
+    "id": "t1",
+    "type": "fitness",
+    "timestamp": "2026-06-01T06:30:00Z",
+    "content": {
+      "activity": "Morning Run",
+      "distance": "5km",
+      "duration": "30 mins",
+      "heartRate": "145 bpm"
+    },
+    "tags": ["fitness", "morning"]
+  },
+  {
+    "id": "t2",
+    "type": "diet",
+    "timestamp": "2026-06-01T07:15:00Z",
+    "content": {
+      "meal": "Protein Shake",
+      "calories": "350 kcal"
+    },
+    "tags": ["fitness", "health"]
+  },
+  {
+    "id": "t3",
+    "type": "podcast",
+    "timestamp": "2026-06-01T08:00:00Z",
+    "content": {
+      "show": "Huberman Lab",
+      "episode": "Focus and Motivation"
+    },
+    "tags": ["learning", "commute"]
+  },
+  {
+    "id": "t4",
+    "type": "work",
+    "timestamp": "2026-06-02T10:00:00Z",
+    "content": {
+      "event": "Q3 Planning Meeting",
+      "attendees": "8"
+    },
+    "tags": ["career", "focus"]
+  },
+  {
+    "id": "t5",
+    "type": "random",
+    "timestamp": "2026-06-02T10:05:00Z",
+    "content": {
+      "observation": "Someone brought donuts.",
+      "mood": "happy"
+    },
+    "tags": ["career"]
+  }
+]
